@@ -510,6 +510,20 @@ where
             .send(Request::resolves_never(operation));
     }
 
+    /// Send an effect request to the shell in a fire and forget fashion. The
+    /// provided `operation` does not expect anything to be returned back.
+    /// this api is not async because the sender is sync
+    pub fn notify_shell_sync(&self, operation: Op) {
+        // This function might look like it doesn't need to be async but
+        // it's important that it is.  It forces all capabilities to
+        // spawn onto the executor which keeps the ordering of effects
+        // consistent with their function calls.
+        self.inner
+            .shell_channel
+            .send(Request::resolves_never(operation));
+    }
+
+
     /// Send an event to the app. The event will be processed on the next
     /// run of the update loop. You can call `update_app` several times,
     /// the events will be queued up and processed sequentially after your
