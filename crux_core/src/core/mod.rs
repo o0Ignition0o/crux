@@ -78,6 +78,7 @@ where
     /// effect requests.
     // used in docs/internals/runtime.md
     // ANCHOR: process_event
+    #[track_caller]
     pub fn process_event(&self, event: A::Event) -> Vec<Ef> {
         let mut model = self.model.write().expect("Model RwLock was poisoned.");
 
@@ -98,6 +99,7 @@ where
     // used in docs/internals/runtime.md and docs/internals/bridge.md
     // ANCHOR: resolve
     // ANCHOR: resolve_sig
+    #[track_caller]
     pub fn resolve<Op>(&self, request: &mut Request<Op>, result: Op::Output) -> Vec<Ef>
     where
         Op: Operation,
@@ -112,6 +114,7 @@ where
 
     // used in docs/internals/runtime.md
     // ANCHOR: process
+    #[track_caller]
     pub(crate) fn process(&self) -> Vec<Ef> {
         self.executor.run_all();
 

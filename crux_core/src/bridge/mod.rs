@@ -75,6 +75,7 @@ where
     /// The `id` MUST match the `id` of the effect that triggered it, else the core will panic.
     // used in docs/internals/bridge.md
     // ANCHOR: handle_response_sig
+    #[track_caller]
     pub fn handle_response(&self, id: u32, output: &[u8]) -> Vec<u8>
     // ANCHOR_END: handle_response_sig
     where
@@ -86,7 +87,6 @@ where
 
         let mut return_buffer = vec![];
         let mut ser = bincode::Serializer::new(&mut return_buffer, options);
-
         self.inner.handle_response(id, &mut deser, &mut ser);
 
         return_buffer
@@ -148,12 +148,14 @@ where
     ///
     /// The `event` is serialized and will be deserialized by the core before it's passed
     /// to your app.
+    #[track_caller]
     pub fn process_event<'de, D, S>(&self, event: D, requests_out: S)
     where
         for<'a> A::Event: Deserialize<'a>,
         D: ::serde::de::Deserializer<'de> + 'de,
         S: ::serde::ser::Serializer,
     {
+        tracing::error!("process_event: {:?}", std::panic::Location::caller());
         let mut erased_de = <dyn erased_serde::Deserializer>::erase(event);
         self.process(
             None,
@@ -166,12 +168,14 @@ where
     ///
     /// The `output` is serialized capability output. It will be deserialized by the core.
     /// The `id` MUST match the `id` of the effect that triggered it, else the core will panic.
+    #[track_caller]
     pub fn handle_response<'de, D, S>(&self, id: u32, response: D, requests_out: S)
     where
         for<'a> A::Event: Deserialize<'a>,
         D: ::serde::de::Deserializer<'de>,
         S: ::serde::ser::Serializer,
     {
+        tracing::error!("handle_response: {:?}", std::panic::Location::caller());
         let mut erased_response = <dyn erased_serde::Deserializer>::erase(response);
         self.process(
             Some(EffectId(id)),
@@ -179,7 +183,7 @@ where
             &mut <dyn erased_serde::Serializer>::erase(requests_out),
         );
     }
-
+    #[track_caller]
     fn process(
         &self,
         id: Option<EffectId>,
@@ -196,6 +200,7 @@ where
                 self.core.process_event(shell_event)
             }
             Some(id) => {
+                tracing::error!("resuming ID: {}", id.0);
                 self.registry.resume(id, data).expect(
                     "Response could not be handled. The request did not expect a response.",
                 );
