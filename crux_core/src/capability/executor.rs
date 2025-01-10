@@ -91,7 +91,6 @@ impl Wake for TaskWaker {
 impl QueuingExecutor {
     #[track_caller]
     pub fn run_all(&self) {
-        let mut loop_count = 0;
         // we read off both queues and execute the tasks we receive.
         // Since either queue can generate work for the other queue,
         // we read from them in a loop until we are sure both queues
@@ -107,12 +106,10 @@ impl QueuingExecutor {
                     .expect("Task slab poisoned")
                     .insert(Some(task));
                 let task_id = TaskId(task_id.try_into().expect("taskid overflow"));
-                tracing::error!("spawn queue added a task {:?} {:?}", task_id, std::panic::Location::caller());
                 self.run_task(task_id);
                 did_some_work = true;
             }
             while let Ok(task_id) = self.ready_queue.try_recv() {
-                tracing::error!("ready! {:?}", task_id);
                 match self.run_task(task_id) {
                     RunTask::Unavailable => {
                         // We were unable to run the task as it is (presumably) being run on
@@ -121,23 +118,15 @@ impl QueuingExecutor {
                         // until all remaining work is 'unavailable', at which point we will bail
                         // out of the loop, leaving the queued work to be finished by another thread.
                         // This strategy should avoid dropping work or busy-looping
-                        tracing::error!("unavailable wtf?");
                         self.ready_sender.send(task_id).expect("could not requeue");
                     }
                     RunTask::Missing => {
                         // This is possible if a naughty future sends a wake notification while
                         // still running, then runs to completion and is evicted from the slab.
                         // Nothing to be done.
-                        tracing::error!("missing en vrai :o");
                     }
                     RunTask::Suspended | RunTask::Completed => {
                         did_some_work = true;
-                        if loop_count == 20 {
-                            panic!("fu");
-                        }
-                        else {
-                            loop_count += 1;
-                        }
                     }
                 }
             }
@@ -167,7 +156,6 @@ impl QueuingExecutor {
 
         // poll the task
         if task.as_mut().poll(context).is_pending() {
-            tracing::error!("{:?} is pending", task_id);
             // If it's still pending, put the future back in the slot
             self.tasks
                 .lock()
@@ -177,7 +165,6 @@ impl QueuingExecutor {
                 .replace(task);
             RunTask::Suspended
         } else {
-            tracing::error!("{:?} completed", task_id);
             // otherwise the future is completed and we can free the slot
             self.tasks.lock().unwrap().remove(*task_id as usize);
             RunTask::Completed

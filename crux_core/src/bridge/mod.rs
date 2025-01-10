@@ -155,7 +155,6 @@ where
         D: ::serde::de::Deserializer<'de> + 'de,
         S: ::serde::ser::Serializer,
     {
-        tracing::error!("process_event: {:?}", std::panic::Location::caller());
         let mut erased_de = <dyn erased_serde::Deserializer>::erase(event);
         self.process(
             None,
@@ -175,7 +174,6 @@ where
         D: ::serde::de::Deserializer<'de>,
         S: ::serde::ser::Serializer,
     {
-        tracing::error!("handle_response: {:?}", std::panic::Location::caller());
         let mut erased_response = <dyn erased_serde::Deserializer>::erase(response);
         self.process(
             Some(EffectId(id)),
@@ -200,7 +198,6 @@ where
                 self.core.process_event(shell_event)
             }
             Some(id) => {
-                tracing::error!("resuming ID: {}", id.0);
                 self.registry.resume(id, data).expect(
                     "Response could not be handled. The request did not expect a response.",
                 );

@@ -64,11 +64,7 @@ impl ResolveRegistry {
         };
 
         let resolved = entry.resolve(body);
-        tracing::error!("resolved status OK ? : {}, {}", resolved.is_ok(), match entry {
-            ResolveSerialized::Never => "never",
-            ResolveSerialized::Once(_) => "once",
-            ResolveSerialized::Many(_) => "many",
-        });
+
         if let ResolveSerialized::Never = entry {
             registry_lock.remove(id.0 as usize);
         }
