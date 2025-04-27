@@ -124,7 +124,7 @@ where
 
     // used in docs/internals/runtime.md
     // ANCHOR: process
-    pub(crate) fn process(&self) -> Vec<A::Effect> {
+    pub fn process(&self) -> Vec<A::Effect> {
         self.executor.run_all();
 
         while let Some(capability_event) = self.capability_events.receive() {
