@@ -27,7 +27,7 @@ pub enum ResolveSerialized {
 // ANCHOR_END: resolve_serialized
 
 impl ResolveSerialized {
-    pub(crate) fn resolve(
+    pub fn resolve(
         &mut self,
         bytes: &mut dyn erased_serde::Deserializer,
     ) -> Result<(), BridgeError> {
