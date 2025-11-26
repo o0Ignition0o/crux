@@ -183,7 +183,7 @@ impl TypeRegistry {
         T: Facet<'a>,
     {
         let builder = std::mem::take(&mut self.0);
-        self.0 = builder.add_type::<T>();
+        self.0 = builder.add_type::<T>().expect("couldn't register type");
 
         self
     }
@@ -191,7 +191,7 @@ impl TypeRegistry {
     #[must_use]
     pub fn build(&mut self) -> CodeGenerator {
         let builder = std::mem::take(&mut self.0);
-        CodeGenerator(builder.build())
+        CodeGenerator(builder.build().expect("couldn't build type registry"))
     }
 }
 

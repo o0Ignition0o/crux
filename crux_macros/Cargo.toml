@@ -26,7 +26,7 @@ crux_http = { path = "../crux_http" }
 facet = { workspace = true }
 insta = "1.43.1"
 prettyplease = "0.2"
-serde = { version = "1.0.219", features = ["derive"] }
+serde = { version = "1.0.228", features = ["derive"] }
 
 [features]
 typegen = ["crux_core/typegen"]

@@ -21,7 +21,7 @@ crux_cli = { version = "0.1.0", optional = true, path = "../crux_cli" }
 crux_macros = { version = "0.7.0", path = "../crux_macros", optional = true }
 erased-serde = "0.4"
 facet.workspace = true
-facet_generate = { version = "0.11.0", optional = true }
+facet_generate = { version = "0.12.1", optional = true, git = "https://github.com/o0Ignition0o/facet-generate", branch = "facet_0_31" }
 # facet_generate = { optional = true, path = "../../facet-generate" }
 futures = "0.3.31"
 log = { version = "0.4.27", optional = true }
@@ -40,7 +40,7 @@ crux_http = { path = "../crux_http" }
 crux_time = { path = "../crux_time" }
 doctest_support = { path = "../doctest_support" }
 rand = "0.9"
-serde = { version = "1.0.219", features = ["derive"] }
+serde = { version = "1.0.228", features = ["derive"] }
 static_assertions = "1.1"
 tempfile = "3.20.0"
 url = "2.5.4"
