@@ -183,7 +183,13 @@ impl TypeRegistry {
         T: Facet<'a>,
     {
         let builder = std::mem::take(&mut self.0);
-        self.0 = builder.add_type::<T>().expect("couldn't register type");
+        self.0 = builder.add_type::<T>().unwrap_or_else(|e| {
+            panic!(
+                "couldn't register type {}: {e} {}",
+                std::any::type_name::<T>(),
+                T::SHAPE.type_identifier
+            )
+        });
 
         self
     }

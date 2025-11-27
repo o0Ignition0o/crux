@@ -14,6 +14,7 @@ use url::Url;
 mod config;
 mod error;
 mod expect;
+pub(crate) mod facet_utils;
 mod request;
 mod request_builder;
 mod response;

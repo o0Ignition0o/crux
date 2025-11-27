@@ -1066,7 +1066,7 @@ dependencies = [
 [[package]]
 name = "facet_generate"
 version = "0.12.1"
-source = "git+https://github.com/o0Ignition0o/facet-generate?branch=facet_0_31#f7f1bfa8c9b08fa195e578442e48757bc3727270"
+source = "git+https://github.com/o0Ignition0o/facet-generate?branch=facet_0_31#637cea06253b2701d9be38003eb5a92da24898d3"
 dependencies = [
  "derive_builder",
  "facet",
